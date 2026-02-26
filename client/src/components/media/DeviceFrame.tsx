@@ -33,7 +33,7 @@ export function DeviceFrame({ type, url, thumbnail, className }: DeviceFrameProp
 
   if (isIphone) {
     return (
-      <div className={cn("relative mx-auto w-[300px] h-[600px] rounded-[40px] border-[12px] border-zinc-900 bg-black overflow-hidden shadow-2xl shadow-black/50 ring-1 ring-white/10", className)}>
+      <div className={cn("relative mx-auto w-[220px] h-[440px] md:w-[300px] md:h-[600px] rounded-[30px] md:rounded-[40px] border-[10px] md:border-[12px] border-zinc-900 bg-black overflow-hidden shadow-2xl shadow-black/50 ring-1 ring-white/10", className)}>
         {/* Notch */}
         <div className="absolute top-0 inset-x-0 h-6 bg-zinc-900 rounded-b-3xl w-1/2 mx-auto z-10"></div>
         
@@ -66,7 +66,7 @@ export function DeviceFrame({ type, url, thumbnail, className }: DeviceFrameProp
 
   if (isIpad) {
     return (
-      <div className={cn("relative mx-auto w-[600px] h-[450px] rounded-[24px] border-[16px] border-zinc-900 bg-black overflow-hidden shadow-2xl shadow-black/50 ring-1 ring-white/10", className)}>
+      <div className={cn("relative mx-auto w-full max-w-[600px] aspect-[4/3] rounded-[16px] md:rounded-[24px] border-[10px] md:border-[16px] border-zinc-900 bg-black overflow-hidden shadow-2xl shadow-black/50 ring-1 ring-white/10", className)}>
         {/* Camera dot */}
         <div className="absolute top-1/2 left-[-10px] w-2 h-2 rounded-full bg-zinc-950 z-10 transform -translate-y-1/2"></div>
         <video src={url} className="w-full h-full object-cover" poster={thumbnail} controls loop muted playsInline />

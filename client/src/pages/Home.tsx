@@ -49,7 +49,7 @@ export default function Home() {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto flex flex-col gap-10 pb-20">
+    <div className="w-full max-w-6xl mx-auto flex flex-col gap-6 md:gap-10 pb-20">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -58,11 +58,11 @@ export default function Home() {
         <div className="inline-block px-3 py-1 mb-4 rounded-full border border-primary/30 bg-primary/10 text-primary font-extended text-xs font-bold tracking-widest uppercase">
           {currentFolder ? "Dossier" : "Accueil"}
         </div>
-        <h2 className="text-4xl md:text-5xl font-extended font-bold tracking-tight text-white mb-4">
+        <h2 className="text-2xl md:text-4xl lg:text-5xl font-extended font-bold tracking-tight text-white mb-4">
           {title}
         </h2>
         {currentFolder && (
-          <p className="text-muted-foreground text-lg max-w-2xl font-light">
+          <p className="text-muted-foreground text-sm md:text-lg max-w-2xl font-light">
             Explorez les assets de communication, activations et campagnes associés à ce territoire.
           </p>
         )}
@@ -78,14 +78,14 @@ export default function Home() {
           <h3 className="font-extended font-bold text-sm tracking-widest text-muted-foreground uppercase border-b border-border/50 pb-2">
             Sous-Dossiers
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
             {subfolders.map((folder) => (
-              <Link key={folder.id} href={`/${folder.id}`} className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 p-6 hover:bg-white/10 hover:border-primary/50 transition-all duration-300 flex items-center gap-4 cursor-pointer">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
-                  <FolderIcon className="w-6 h-6" />
+              <Link key={folder.id} href={`/${folder.id}`} className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 p-4 md:p-6 hover:bg-white/10 hover:border-primary/50 transition-all duration-300 flex items-center gap-4 cursor-pointer">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300 flex-shrink-0">
+                  <FolderIcon className="w-5 h-5 md:w-6 md:h-6" />
                 </div>
-                <div className="flex-1">
-                  <h4 className="font-extended font-bold text-white text-sm leading-tight group-hover:text-primary transition-colors">
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-extended font-bold text-white text-xs md:text-sm leading-tight group-hover:text-primary transition-colors truncate">
                     {folder.name}
                   </h4>
                   <span className="text-xs text-muted-foreground mt-1 block">
@@ -103,16 +103,16 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="flex flex-col gap-4 mt-8"
+          className="flex flex-col gap-4 mt-4 md:mt-8"
         >
           <h3 className="font-extended font-bold text-sm tracking-widest text-muted-foreground uppercase border-b border-border/50 pb-2">
             Assets Disponibles
           </h3>
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 mt-4">
             {assets.map((asset) => (
               <Dialog key={asset.id}>
                 <DialogTrigger asChild>
-                  <div className="group cursor-pointer rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-all duration-500 overflow-hidden flex flex-col h-full shadow-lg hover:shadow-primary/5">
+                  <div data-testid={`card-asset-${asset.id}`} className="group cursor-pointer rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-all duration-500 overflow-hidden flex flex-col h-full shadow-lg hover:shadow-primary/5">
                     <div className="relative aspect-[16/10] w-full bg-black flex items-center justify-center overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center transform scale-90 group-hover:scale-100 transition-transform">
@@ -136,62 +136,51 @@ export default function Home() {
                         </div>
                       )}
 
-                      <div className="absolute top-4 left-4 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10">
+                      <div className="absolute top-3 left-3 md:top-4 md:left-4 z-20 flex items-center gap-2 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10">
                         {getIconForType(asset.type)}
                         <span className="text-[10px] font-extended uppercase font-bold tracking-wider text-white">
                           {asset.type.replace('VIDEO_', '')}
                         </span>
                       </div>
                     </div>
-
-                    <div className="p-6 flex flex-col flex-1">
-                      <h4 className="text-xl font-extended font-bold text-white group-hover:text-primary transition-colors">
-                        {asset.name}
-                      </h4>
-                      {asset.description && (
-                        <p className="text-sm text-muted-foreground mt-3 line-clamp-2 font-light leading-relaxed">
-                          {asset.description}
-                        </p>
-                      )}
-                    </div>
                   </div>
                 </DialogTrigger>
 
-                <DialogContent className="max-w-[95vw] w-full max-h-[95vh] h-full p-0 bg-zinc-950/95 backdrop-blur-xl border-white/10 flex flex-col md:flex-row overflow-hidden rounded-2xl" aria-describedby={undefined}>
+                <DialogContent className={`${asset.description ? 'max-w-[95vw]' : 'max-w-[95vw] md:max-w-[80vw]'} w-full max-h-[95vh] h-full p-0 bg-zinc-950/95 backdrop-blur-xl border-white/10 flex flex-col md:flex-row overflow-hidden rounded-2xl`} aria-describedby={undefined}>
                   <DialogTitle className="sr-only">{asset.name}</DialogTitle>
-                  <div className="flex-[2] relative p-8 md:p-12 flex items-center justify-center bg-black/50 overflow-y-auto">
+                  <div className="flex-1 relative p-4 md:p-8 lg:p-12 flex items-center justify-center bg-black/50 overflow-y-auto">
                     <DeviceFrame type={asset.type} url={asset.url} />
                   </div>
 
-                  <div className="flex-1 min-w-[300px] max-w-[500px] bg-zinc-900/80 p-8 md:p-12 border-l border-white/5 flex flex-col gap-8 overflow-y-auto">
-                    <div>
-                      <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
-                          {getIconForType(asset.type)}
+                  {asset.description && (
+                    <div className="flex-shrink-0 w-full md:w-[350px] lg:w-[400px] bg-zinc-900/80 p-6 md:p-8 lg:p-12 border-t md:border-t-0 md:border-l border-white/5 flex flex-col gap-6 md:gap-8 overflow-y-auto">
+                      <div>
+                        <div className="flex items-center gap-3 mb-4 md:mb-6">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+                            {getIconForType(asset.type)}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-xs font-extended uppercase tracking-widest text-muted-foreground">Type</span>
+                            <span className="text-sm font-bold text-white">{asset.type}</span>
+                          </div>
                         </div>
-                        <div className="flex flex-col">
-                          <span className="text-xs font-extended uppercase tracking-widest text-muted-foreground">Type</span>
-                          <span className="text-sm font-bold text-white">{asset.type}</span>
-                        </div>
-                      </div>
 
-                      <h2 className="text-3xl font-extended font-bold text-white mb-6 leading-tight">
-                        {asset.name}
-                      </h2>
+                        <h2 className="text-xl md:text-3xl font-extended font-bold text-white mb-4 md:mb-6 leading-tight">
+                          {asset.name}
+                        </h2>
 
-                      {asset.description && (
                         <div className="prose prose-invert prose-p:text-muted-foreground prose-p:leading-relaxed">
                           <p>{asset.description}</p>
                         </div>
-                      )}
-                    </div>
+                      </div>
 
-                    <div className="mt-auto pt-8 border-t border-white/10">
-                      <a href={asset.url} download target="_blank" rel="noreferrer" className="w-full block text-center px-6 py-4 bg-primary text-white font-extended font-bold uppercase tracking-widest text-sm hover:bg-primary/90 transition-all rounded-sm shadow-lg shadow-primary/20">
-                        Télécharger l'asset
-                      </a>
+                      <div className="mt-auto pt-6 md:pt-8 border-t border-white/10">
+                        <a href={asset.url} download target="_blank" rel="noreferrer" data-testid={`button-download-${asset.id}`} className="w-full block text-center px-6 py-3 md:py-4 bg-primary text-white font-extended font-bold uppercase tracking-widest text-xs md:text-sm hover:bg-primary/90 transition-all rounded-sm shadow-lg shadow-primary/20">
+                          Télécharger l'asset
+                        </a>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </DialogContent>
               </Dialog>
             ))}
@@ -203,11 +192,11 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex flex-col items-center justify-center p-20 border border-dashed border-white/10 rounded-2xl bg-white/5 mt-8"
+          className="flex flex-col items-center justify-center p-10 md:p-20 border border-dashed border-white/10 rounded-2xl bg-white/5 mt-8"
         >
           <FolderIcon className="w-16 h-16 text-muted-foreground/30 mb-4" />
           <h3 className="font-extended text-lg text-white mb-2">Dossier Vide</h3>
-          <p className="text-muted-foreground">Aucun asset ou sous-dossier n'est présent ici pour le moment.</p>
+          <p className="text-muted-foreground text-center">Aucun asset ou sous-dossier n'est présent ici pour le moment.</p>
         </motion.div>
       )}
 
@@ -215,7 +204,7 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex flex-col items-center justify-center p-20 border border-dashed border-white/10 rounded-2xl bg-white/5 mt-8"
+          className="flex flex-col items-center justify-center p-10 md:p-20 border border-dashed border-white/10 rounded-2xl bg-white/5 mt-8"
         >
           <FolderIcon className="w-16 h-16 text-muted-foreground/30 mb-4" />
           <h3 className="font-extended text-lg text-white mb-2">Répertoire Vide</h3>
