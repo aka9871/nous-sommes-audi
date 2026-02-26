@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { type Folder } from "@/data/mockData";
 import { cn } from "@/lib/utils";
 import { getIconForType } from "@/components/media/DeviceFrame";
-import { ChevronRight, ShieldAlert, Menu, X } from "lucide-react";
+import { ChevronRight, ShieldAlert, Menu, X, Folder as FolderIcon } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import audiLogo from "@assets/Audi_Rings_wh-RGB_1772014848825.png";
 import romanceLogo from "@assets/logo-r-white_1772015879043.png";
@@ -19,14 +19,21 @@ const NavItem = ({ folder, level = 0, currentPath, onNavigate }: { folder: Folde
   return (
     <div className="w-full flex flex-col">
       <Link href={`/${folder.id}`} onClick={onNavigate} className={cn(
-          "flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 border-l-2",
+          "flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 border-l-2 relative",
           isActive
-            ? "bg-primary/10 border-primary text-white font-medium"
+            ? "bg-primary/15 border-primary text-white font-bold shadow-[inset_0_0_20px_rgba(187,10,33,0.1)]"
             : "border-transparent text-muted-foreground hover:bg-white/5 hover:text-white"
         )}
         style={{ paddingLeft: `${level * 12 + 16}px` }}>
-          {getIconForType('FOLDER')}
+          {isActive ? (
+            <FolderIcon className="w-5 h-5 text-primary fill-primary/20" />
+          ) : (
+            getIconForType('FOLDER')
+          )}
           <span className="truncate flex-1">{folder.name}</span>
+          {isActive && (
+            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+          )}
           {folder.subfolders && folder.subfolders.length > 0 && (
             <ChevronRight className={cn("w-4 h-4 opacity-50 transition-transform", isExpanded && "rotate-90")} />
           )}

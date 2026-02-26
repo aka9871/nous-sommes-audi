@@ -122,7 +122,7 @@ export async function registerRoutes(
       return res.status(404).json({ message: "Content directory not found" });
     }
 
-    function findFolder(dirPath: string, targetSlug: string, baseUrl: string): any | null {
+    function findFolder(dirPath: string, targetSlug: string, baseUrl: string, parentSlug: string | null = null, parentName: string | null = null): any | null {
       const entries = fs.readdirSync(dirPath, { withFileTypes: true });
       for (const entry of entries) {
         if (!entry.isDirectory() || entry.name.startsWith('.')) continue;
@@ -131,9 +131,9 @@ export async function registerRoutes(
         const subUrl = `${baseUrl}/${encodeURIComponent(entry.name)}`;
         if (slug === targetSlug) {
           const content = scanFolder(subPath, subUrl);
-          return { id: slug, name: entry.name, ...content };
+          return { id: slug, name: entry.name, parentId: parentSlug, parentName: parentName, ...content };
         }
-        const deeper = findFolder(subPath, targetSlug, subUrl);
+        const deeper = findFolder(subPath, targetSlug, subUrl, slug, entry.name);
         if (deeper) return deeper;
       }
       return null;

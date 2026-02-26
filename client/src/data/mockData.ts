@@ -12,6 +12,8 @@ export interface Asset {
 export interface Folder {
   id: string;
   name: string;
+  parentId?: string | null;
+  parentName?: string | null;
   subfolders?: Folder[];
   assets?: Asset[];
 }
