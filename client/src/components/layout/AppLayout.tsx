@@ -12,9 +12,17 @@ interface AppLayoutProps {
   children: React.ReactNode;
 }
 
+function hasActiveDescendant(folder: Folder, currentPath: string): boolean {
+  if (currentPath === `/${folder.id}`) return true;
+  if (folder.subfolders) {
+    return folder.subfolders.some(sub => hasActiveDescendant(sub, currentPath));
+  }
+  return false;
+}
+
 const NavItem = ({ folder, level = 0, currentPath, onNavigate }: { folder: Folder, level?: number, currentPath: string, onNavigate?: () => void }) => {
-  const isExpanded = currentPath.includes(folder.id);
   const isActive = currentPath === `/${folder.id}`;
+  const isExpanded = isActive || hasActiveDescendant(folder, currentPath);
 
   return (
     <div className="w-full flex flex-col">
