@@ -119,15 +119,12 @@ function AssetListItem({ asset }: { asset: Asset }) {
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2">
               {getIconForType(asset.type)}
               <span className="text-[10px] font-extended uppercase font-bold tracking-wider text-muted-foreground">
                 {asset.type.replace('VIDEO_', '')}
               </span>
             </div>
-            <h4 className="text-sm md:text-base font-medium text-white truncate group-hover:text-primary transition-colors">
-              {asset.name}
-            </h4>
             {asset.description && (
               <p className="text-xs text-muted-foreground mt-1 truncate">{asset.description}</p>
             )}
