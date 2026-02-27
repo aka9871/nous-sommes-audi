@@ -1,0 +1,32 @@
+ubuntu@vps-e7bf8b16:/var/www/nous-sommes-audi$ sudo CONTENT_DIR=/srv/sftp/nous-sommes-audi/content bash scripts/optimize-videos.sh
+=== Optimisation des vidéos ===
+Dossier : /srv/sftp/nous-sommes-audi/content
+Qualité CRF : 23 (plus bas = meilleure qualité, 18-28 recommandé)
+Preset : slow
+
+  TRAITEMENT /srv/sftp/nous-sommes-audi/content/Audi Business Activations/myAudi main activations/test_video.mov (70.3 Mo)...
+  OK 70.3 Mo → 3.0 Mo (-100%)
+(standard_in) 1: syntax error
+  TRAITEMENT s-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/New Q4 e-tron casy study_Q4 e-tron Launch campaign_Ontheroad_SLIDE81.mov ( Mo)...
+[in#0 @ 0x583479857fc0] Error opening input: No such file or directory
+Error opening input file s-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/New Q4 e-tron casy study_Q4 e-tron Launch campaign_Ontheroad_SLIDE81.mov.
+Error opening input files: No such file or directory
+  ERREUR Impossible de traiter s-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/New Q4 e-tron casy study_Q4 e-tron Launch campaign_Ontheroad_SLIDE81.mov
+  TRAITEMENT /srv/sftp/nous-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/New Q4 e-tron casy study_Q4 e-tron Launch campaign_Lightsoff_SLIDE83.mov (15.0 Mo)...
+  OK 15.0 Mo → 1.4 Mo (-100%)
+(standard_in) 1: syntax error
+  TRAITEMENT us-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/New Q4 e-tron casy study_Q4 e-tron Launch campaign_BrandtertainmentxCanal+_SLIDE77.mov ( Mo)...
+[in#0 @ 0x6486ae273fc0] Error opening input: No such file or directory
+Error opening input file us-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/New Q4 e-tron casy study_Q4 e-tron Launch campaign_BrandtertainmentxCanal+_SLIDE77.mov.
+Error opening input files: No such file or directory
+  ERREUR Impossible de traiter us-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/New Q4 e-tron casy study_Q4 e-tron Launch campaign_BrandtertainmentxCanal+_SLIDE77.mov
+
+=== Résultat ===
+Vidéos trouvées : 4
+Optimisées : 2
+Ignorées : 0
+Espace économisé : 80.8 Mo
+
+Pour re-optimiser une vidéo déjà traitée, supprimez le fichier marqueur :
+  rm /srv/sftp/nous-sommes-audi/content/.nom-video.mp4.optimized
+ubuntu@vps-e7bf8b16:/var/www/nous-sommes-audi$ 

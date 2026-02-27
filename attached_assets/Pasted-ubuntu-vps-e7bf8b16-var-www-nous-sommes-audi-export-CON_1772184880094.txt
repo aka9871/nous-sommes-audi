@@ -1,0 +1,36 @@
+ubuntu@vps-e7bf8b16:/var/www/nous-sommes-audi$ export CONTENT_DIR=/srv/sftp/nous-sommes-audi/content && bash scripts/optimize-videos.sh
+=== Optimisation des vidéos ===
+Dossier : /srv/sftp/nous-sommes-audi/content
+Qualité CRF : 23 (plus bas = meilleure qualité, 18-28 recommandé)
+Preset : slow
+
+  TRAITEMENT /srv/sftp/nous-sommes-audi/content/Audi Business Activations/myAudi main activations/test_video.mov (70.3 Mo)...
+[out#0/mov @ 0x60e810ff8600] Error opening output /srv/sftp/nous-sommes-audi/content/Audi Business Activations/myAudi main activations/.tmp_optimized_test_video.mov: Permission denied
+Error opening output file /srv/sftp/nous-sommes-audi/content/Audi Business Activations/myAudi main activations/.tmp_optimized_test_video.mov.
+Error opening output files: Permission denied
+  ERREUR Impossible de traiter /srv/sftp/nous-sommes-audi/content/Audi Business Activations/myAudi main activations/test_video.mov
+  TRAITEMENT /srv/sftp/nous-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/New Q4 e-tron casy study_Q4 e-tron Launch campaign_Ontheroad_SLIDE81.mov (22.5 Mo)...
+[out#0/mov @ 0x641573270100] Error opening output /srv/sftp/nous-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/.tmp_optimized_New Q4 e-tron casy study_Q4 e-tron Launch campaign_Ontheroad_SLIDE81.mov: Permission denied
+Error opening output file /srv/sftp/nous-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/.tmp_optimized_New Q4 e-tron casy study_Q4 e-tron Launch campaign_Ontheroad_SLIDE81.mov.
+Error opening output files: Permission denied
+  ERREUR Impossible de traiter /srv/sftp/nous-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/New Q4 e-tron casy study_Q4 e-tron Launch campaign_Ontheroad_SLIDE81.mov
+  TRAITEMENT /srv/sftp/nous-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/New Q4 e-tron casy study_Q4 e-tron Launch campaign_Lightsoff_SLIDE83.mov (15.0 Mo)...
+[out#0/mov @ 0x5d7f5ea6e880] Error opening output /srv/sftp/nous-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/.tmp_optimized_New Q4 e-tron casy study_Q4 e-tron Launch campaign_Lightsoff_SLIDE83.mov: Permission denied
+Error opening output file /srv/sftp/nous-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/.tmp_optimized_New Q4 e-tron casy study_Q4 e-tron Launch campaign_Lightsoff_SLIDE83.mov.
+Error opening output files: Permission denied
+  ERREUR Impossible de traiter /srv/sftp/nous-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/New Q4 e-tron casy study_Q4 e-tron Launch campaign_Lightsoff_SLIDE83.mov
+  TRAITEMENT /srv/sftp/nous-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/New Q4 e-tron casy study_Q4 e-tron Launch campaign_BrandtertainmentxCanal+_SLIDE77.mov (64.5 Mo)...
+[out#0/mov @ 0x623e273bccc0] Error opening output /srv/sftp/nous-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/.tmp_optimized_New Q4 e-tron casy study_Q4 e-tron Launch campaign_BrandtertainmentxCanal+_SLIDE77.mov: Permission denied
+Error opening output file /srv/sftp/nous-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/.tmp_optimized_New Q4 e-tron casy study_Q4 e-tron Launch campaign_BrandtertainmentxCanal+_SLIDE77.mov.
+Error opening output files: Permission denied
+  ERREUR Impossible de traiter /srv/sftp/nous-sommes-audi/content/New Q4 e-tron casy study/Q4 e-tron Launch campaign/New Q4 e-tron casy study_Q4 e-tron Launch campaign_BrandtertainmentxCanal+_SLIDE77.mov
+
+=== Résultat ===
+Vidéos trouvées : 4
+Optimisées : 0
+Ignorées : 0
+Espace économisé : 0 Mo
+
+Pour re-optimiser une vidéo déjà traitée, supprimez le fichier marqueur :
+  rm /srv/sftp/nous-sommes-audi/content/.nom-video.mp4.optimized
+ubuntu@vps-e7bf8b16:/var/www/nous-sommes-audi$
