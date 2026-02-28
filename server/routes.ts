@@ -42,7 +42,7 @@ function scanFolder(dirPath: string, baseUrl: string): any {
   if (!fs.existsSync(dirPath)) return { subfolders: [], assets: [] };
 
   const entries = fs.readdirSync(dirPath, { withFileTypes: true })
-    .sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+    .sort((a, b) => a.name.localeCompare(b.name, 'fr', { numeric: true }));
 
   const subfolders: any[] = [];
   const assets: any[] = [];
@@ -82,7 +82,7 @@ function scanFolder(dirPath: string, baseUrl: string): any {
     }
   }
 
-  assets.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+  assets.sort((a, b) => a.name.localeCompare(b.name, 'fr', { numeric: true }));
 
   return { subfolders, assets };
 }
