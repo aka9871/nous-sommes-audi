@@ -82,6 +82,8 @@ function scanFolder(dirPath: string, baseUrl: string): any {
     }
   }
 
+  assets.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+
   return { subfolders, assets };
 }
 
