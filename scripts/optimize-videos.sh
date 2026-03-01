@@ -62,7 +62,7 @@ find "$CONTENT_DIR" -type f \( -iname "*.mp4" -o -iname "*.mov" -o -iname "*.avi
     NAMENOEXT="${FILENAME%.*}"
     TEMP_FILE="$DIR/.tmp_optimized_${NAMENOEXT}.mp4"
 
-    ffmpeg -i "$VIDEO" \
+    ffmpeg -nostdin -i "$VIDEO" \
         -map 0:v:0 -map 0:a? \
         -c:v libx264 \
         -crf "$CRF" \
@@ -73,7 +73,7 @@ find "$CONTENT_DIR" -type f \( -iname "*.mp4" -o -iname "*.mov" -o -iname "*.avi
         -max_muxing_queue_size 1024 \
         -y \
         -loglevel warning \
-        "$TEMP_FILE" 2>&1
+        "$TEMP_FILE" </dev/null 2>&1
 
     FFMPEG_EXIT=$?
 
