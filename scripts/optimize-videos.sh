@@ -32,6 +32,7 @@ fi
 TOTAL=0
 OPTIMIZED=0
 SKIPPED=0
+ERRORS=0
 SAVED_BYTES=0
 
 echo -e "${YELLOW}=== Optimisation des vidéos ===${NC}"
@@ -40,7 +41,7 @@ echo "Qualité CRF : $CRF (plus bas = meilleure qualité, 18-28 recommandé)"
 echo "Preset : $PRESET"
 echo ""
 
-find "$CONTENT_DIR" -type f \( -iname "*.mp4" -o -iname "*.mov" -o -iname "*.avi" -o -iname "*.webm" \) -print0 | while IFS= read -r -d '' VIDEO; do
+find "$CONTENT_DIR" -type f \( -iname "*.mp4" -o -iname "*.mov" -o -iname "*.avi" -o -iname "*.webm" -o -iname "*.mkv" -o -iname "*.m4v" \) -print0 | while IFS= read -r -d '' VIDEO; do
     TOTAL=$((TOTAL + 1))
     FILENAME="$(basename "$VIDEO")"
     DIR="$(dirname "$VIDEO")"
@@ -49,37 +50,52 @@ find "$CONTENT_DIR" -type f \( -iname "*.mp4" -o -iname "*.mov" -o -iname "*.avi
     if [ -f "$MARKER" ]; then
         echo -e "  ${YELLOW}SKIP${NC} $FILENAME (déjà optimisé)"
         SKIPPED=$((SKIPPED + 1))
-        echo "$TOTAL $OPTIMIZED $SKIPPED $SAVED_BYTES" > /tmp/optimize_stats
+        echo "$TOTAL $OPTIMIZED $SKIPPED $ERRORS $SAVED_BYTES" > /tmp/optimize_stats
         continue
     fi
 
     ORIGINAL_SIZE=$(stat -c%s "$VIDEO" 2>/dev/null || stat -f%z "$VIDEO" 2>/dev/null)
-    ORIGINAL_SIZE_MB=$(awk "BEGIN {printf \"%.1f\", $ORIGINAL_SIZE / 1048576}")
+    ORIGINAL_SIZE_MB=$(awk "BEGIN {printf \"%.1f\", ${ORIGINAL_SIZE:-0} / 1048576}")
 
     echo -e "  ${YELLOW}TRAITEMENT${NC} $FILENAME (${ORIGINAL_SIZE_MB} Mo)..."
 
-    TEMP_FILE="$DIR/.tmp_optimized_$FILENAME"
+    NAMENOEXT="${FILENAME%.*}"
+    TEMP_FILE="$DIR/.tmp_optimized_${NAMENOEXT}.mp4"
 
     ffmpeg -i "$VIDEO" \
+        -map 0:v:0 -map 0:a? \
         -c:v libx264 \
         -crf "$CRF" \
         -preset "$PRESET" \
+        -pix_fmt yuv420p \
         -movflags +faststart \
         -c:a aac -b:a 128k \
+        -max_muxing_queue_size 1024 \
         -y \
         -loglevel warning \
         "$TEMP_FILE" 2>&1
 
-    if [ $? -eq 0 ] && [ -f "$TEMP_FILE" ]; then
-        NEW_SIZE=$(stat -c%s "$TEMP_FILE" 2>/dev/null || stat -f%z "$TEMP_FILE" 2>/dev/null)
-        NEW_SIZE_MB=$(awk "BEGIN {printf \"%.1f\", $NEW_SIZE / 1048576}")
+    FFMPEG_EXIT=$?
 
-        if [ "$NEW_SIZE" -lt "$ORIGINAL_SIZE" ]; then
-            REDUCTION=$(awk "BEGIN {printf \"%.0f\", (1 - $NEW_SIZE / $ORIGINAL_SIZE) * 100}")
-            SAVED=$(($ORIGINAL_SIZE - $NEW_SIZE))
+    if [ $FFMPEG_EXIT -eq 0 ] && [ -f "$TEMP_FILE" ]; then
+        NEW_SIZE=$(stat -c%s "$TEMP_FILE" 2>/dev/null || stat -f%z "$TEMP_FILE" 2>/dev/null)
+        NEW_SIZE_MB=$(awk "BEGIN {printf \"%.1f\", ${NEW_SIZE:-0} / 1048576}")
+
+        if [ "${NEW_SIZE:-0}" -lt "${ORIGINAL_SIZE:-0}" ]; then
+            REDUCTION=$(awk "BEGIN {printf \"%.0f\", (1 - ${NEW_SIZE:-0} / ${ORIGINAL_SIZE:-1}) * 100}")
+            SAVED=$((${ORIGINAL_SIZE:-0} - ${NEW_SIZE:-0}))
             SAVED_BYTES=$(($SAVED_BYTES + $SAVED))
 
-            mv "$TEMP_FILE" "$VIDEO"
+            EXT_ORIG="${FILENAME##*.}"
+            EXT_LOWER=$(echo "$EXT_ORIG" | tr '[:upper:]' '[:lower:]')
+
+            if [ "$EXT_LOWER" = "mp4" ]; then
+                mv "$TEMP_FILE" "$VIDEO"
+            else
+                mv "$TEMP_FILE" "$DIR/${NAMENOEXT}.mp4"
+                rm -f "$VIDEO"
+            fi
+
             touch "$MARKER"
 
             echo -e "  ${GREEN}OK${NC} ${ORIGINAL_SIZE_MB} Mo -> ${NEW_SIZE_MB} Mo (-${REDUCTION}%)"
@@ -92,23 +108,27 @@ find "$CONTENT_DIR" -type f \( -iname "*.mp4" -o -iname "*.mov" -o -iname "*.avi
         fi
     else
         rm -f "$TEMP_FILE"
-        echo -e "  ${RED}ERREUR${NC} Impossible de traiter $FILENAME"
+        echo -e "  ${RED}ERREUR${NC} Impossible de traiter $FILENAME (code: $FFMPEG_EXIT)"
+        ERRORS=$((ERRORS + 1))
     fi
 
-    echo "$TOTAL $OPTIMIZED $SKIPPED $SAVED_BYTES" > /tmp/optimize_stats
+    echo "$TOTAL $OPTIMIZED $SKIPPED $ERRORS $SAVED_BYTES" > /tmp/optimize_stats
 
 done
 
 if [ -f /tmp/optimize_stats ]; then
-    read TOTAL OPTIMIZED SKIPPED SAVED_BYTES < /tmp/optimize_stats
+    read TOTAL OPTIMIZED SKIPPED ERRORS SAVED_BYTES < /tmp/optimize_stats
     rm -f /tmp/optimize_stats
 fi
 
-SAVED_MB=$(awk "BEGIN {printf \"%.1f\", $SAVED_BYTES / 1048576}")
+SAVED_MB=$(awk "BEGIN {printf \"%.1f\", ${SAVED_BYTES:-0} / 1048576}")
 
 echo ""
 echo -e "${YELLOW}=== Résultat ===${NC}"
 echo "Vidéos trouvées : $TOTAL"
-echo "Optimisées : $OPTIMIZED"
+echo -e "Optimisées : ${GREEN}$OPTIMIZED${NC}"
 echo "Ignorées : $SKIPPED"
+if [ "${ERRORS:-0}" -gt 0 ]; then
+    echo -e "Erreurs : ${RED}$ERRORS${NC}"
+fi
 echo -e "Espace économisé : ${GREEN}${SAVED_MB} Mo${NC}"
