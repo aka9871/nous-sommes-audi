@@ -5,28 +5,28 @@
 
 @font-face {
   font-family: 'Audi Type';
-  src: url('@assets/AudiType-Normal_4.03_1772014826536.ttf') format('truetype');
+  src: url('/fonts/AudiType-Normal.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Audi Type';
-  src: url('@assets/AudiType-Bold_4.03_1772014826536.ttf') format('truetype');
+  src: url('/fonts/AudiType-Bold.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Audi Type Extended';
-  src: url('@assets/AudiType-ExtendedNormal_4.03_1772014826536.ttf') format('truetype');
+  src: url('/fonts/AudiType-ExtendedNormal.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Audi Type Extended';
-  src: url('@assets/AudiType-ExtendedBold_4.03_1772014826536.ttf') format('truetype');
+  src: url('/fonts/AudiType-ExtendedBold.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
