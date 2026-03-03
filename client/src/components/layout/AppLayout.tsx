@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 import { getIconForType } from "@/components/media/DeviceFrame";
 import { ChevronRight, ShieldAlert, Menu, X, Folder as FolderIcon } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import audiLogo from "@assets/Audi_Rings_wh-RGB_1772014848825.png";
-import romanceLogo from "@assets/logo-r-white_1772015879043.png";
+const audiLogo = "/fonts/audi-rings-white.png";
+const romanceLogo = "/fonts/logo-romance-white.png";
 
 interface AppLayoutProps {
   children: React.ReactNode;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import audiLogo from "@assets/Audi_Rings_wh-RGB_1772014848825.png";
-import romanceLogo from "@assets/logo-r-white_1772015879043.png";
+const audiLogo = "/fonts/audi-rings-white.png";
+const romanceLogo = "/fonts/logo-romance-white.png";
 import { ShieldAlert, Loader2 } from "lucide-react";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
