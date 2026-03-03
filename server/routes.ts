@@ -155,8 +155,6 @@ export async function registerRoutes(
   app.use('/uploads', express.static(contentDir, {
     maxAge: '1d',
     immutable: false,
-    etag: true,
-    lastModified: true,
   }));
 
   return httpServer;
