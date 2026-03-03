@@ -119,7 +119,7 @@ export default function Home() {
 
   const isLoading = folderId ? folderQuery.isLoading : rootQuery.isLoading;
   const currentFolder = folderId ? folderQuery.data : null;
-  const title = currentFolder ? currentFolder.name : "Vue d'ensemble";
+  const title = currentFolder ? currentFolder.name : "Audi is back";
   const subfolders = currentFolder ? currentFolder.subfolders : rootQuery.data;
   const assets = currentFolder ? currentFolder.assets : [];
 
