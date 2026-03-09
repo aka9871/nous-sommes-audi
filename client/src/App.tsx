@@ -5,15 +5,15 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
+import Presentation from "@/pages/Presentation";
 import AppLayout from "@/components/layout/AppLayout";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 
-function Router() {
+function MainRouter() {
   return (
     <AppLayout>
       <Switch>
         <Route path="/" component={Home} />
-        {/* Catch-all route for any folder path like /1 or /1.1 */}
         <Route path="/:folderId" component={Home} />
         <Route component={NotFound} />
       </Switch>
@@ -26,9 +26,14 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
-        <AuthGuard>
-          <Router />
-        </AuthGuard>
+        <Switch>
+          <Route path="/presentation" component={Presentation} />
+          <Route>
+            <AuthGuard>
+              <MainRouter />
+            </AuthGuard>
+          </Route>
+        </Switch>
       </TooltipProvider>
     </QueryClientProvider>
   );

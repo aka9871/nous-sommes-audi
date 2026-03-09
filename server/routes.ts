@@ -148,6 +148,37 @@ export async function registerRoutes(
     res.json(folder);
   });
 
+  app.post("/api/presentation/verify", (req, res) => {
+    const schema = z.object({ pin: z.string() });
+    const parsed = schema.safeParse(req.body);
+
+    if (!parsed.success) {
+      return res.status(400).json({ success: false, message: "Code PIN requis." });
+    }
+
+    const correctPin = process.env.PRESENTATION_PIN || "1234";
+
+    if (parsed.data.pin === correctPin) {
+      return res.json({ success: true });
+    } else {
+      return res.status(401).json({ success: false, message: "Code PIN incorrect." });
+    }
+  });
+
+  app.get("/api/presentation", (_req, res) => {
+    const presentationDir = process.env.PRESENTATION_DIR || path.join(process.cwd(), 'presentation');
+    const jsonPath = path.join(presentationDir, 'videos.json');
+    try {
+      if (!fs.existsSync(jsonPath)) {
+        return res.json({ folders: [] });
+      }
+      const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+      res.json(data);
+    } catch (err) {
+      res.status(500).json({ message: "Erreur lecture fichier présentation" });
+    }
+  });
+
   const contentDir = getContentDir();
   if (!fs.existsSync(contentDir)) {
     fs.mkdirSync(contentDir, { recursive: true });
