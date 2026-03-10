@@ -156,11 +156,10 @@ function VideoCardWithDialog({ video }: { video: PresentationVideo }) {
           </div>
           <div className="relative w-full aspect-video">
             <iframe
-              src={`${video.url}&autoplay=1`}
+              src={`${video.url}${video.url.includes('?') ? '&' : '?'}autoplay=1&title=0&byline=0&portrait=0`}
               className="absolute inset-0 w-full h-full"
               frameBorder="0"
-              allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-              referrerPolicy="strict-origin-when-cross-origin"
+              allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
               allowFullScreen
               title={video.title}
             />
