@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ChevronRight, Play, Folder as FolderIcon, ShieldAlert, Loader2, Menu, X } from "lucide-react";
+import { ChevronRight, Play, Folder as FolderIcon, ShieldAlert, Loader2, Menu, X, LayoutGrid, List, Home } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
@@ -146,12 +146,52 @@ function VideoCard({ video, onClick }: { video: PresentationVideo; onClick: () =
   );
 }
 
-function VideoCardWithDialog({ video }: { video: PresentationVideo }) {
+function VideoListItem({ video, onClick }: { video: PresentationVideo; onClick: () => void }) {
+  const videoId = getVimeoId(video.url);
+  const thumbnailUrl = videoId ? `https://vumbnail.com/${videoId}.jpg` : null;
+
+  return (
+    <div
+      className="group cursor-pointer rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-all duration-300 overflow-hidden flex items-center gap-4 p-2 pr-4"
+      onClick={onClick}
+      data-testid={`list-video-${video.title}`}
+    >
+      <div className="relative w-40 md:w-48 aspect-video rounded-lg overflow-hidden flex-shrink-0 bg-black">
+        {thumbnailUrl ? (
+          <img src={thumbnailUrl} alt="" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300" />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-zinc-900 via-black to-zinc-900 flex items-center justify-center">
+            <img src={audiLogo} alt="" className="w-12 opacity-10" />
+          </div>
+        )}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-primary/20 border border-primary/50 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 group-hover:bg-primary/30 transition-all duration-300">
+            <div className="w-0 h-0 border-t-[6px] border-t-transparent border-l-[10px] border-l-white border-b-[6px] border-b-transparent ml-0.5"></div>
+          </div>
+        </div>
+      </div>
+      <div className="flex-1 min-w-0">
+        <h4 className="font-extended font-bold text-white text-xs md:text-sm leading-tight group-hover:text-primary transition-colors truncate">
+          {video.title}
+        </h4>
+        {video.description && (
+          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{video.description}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function VideoCardWithDialog({ video, viewMode }: { video: PresentationVideo; viewMode: "grid" | "list" }) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <VideoCard video={video} onClick={() => setOpen(true)} />
+      {viewMode === "grid" ? (
+        <VideoCard video={video} onClick={() => setOpen(true)} />
+      ) : (
+        <VideoListItem video={video} onClick={() => setOpen(true)} />
+      )}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-5xl w-[95vw] bg-black/95 border-white/10 p-0 overflow-hidden">
           <div className="relative w-full aspect-video">
@@ -236,10 +276,28 @@ function SidebarNavItem({ folder, level = 0, activeFolder, onSelect, onNavigate,
   );
 }
 
+function buildBreadcrumb(folders: PresentationFolder[], targetPath: string): { name: string; path: string }[] {
+  const parts = targetPath.split("/");
+  const crumbs: { name: string; path: string }[] = [];
+  let currentFolders = folders;
+  let currentPath = "";
+
+  for (const part of parts) {
+    const folder = currentFolders.find(f => slugify(f.name) === part);
+    if (!folder) break;
+    currentPath = currentPath ? `${currentPath}/${part}` : part;
+    crumbs.push({ name: folder.name, path: currentPath });
+    currentFolders = folder.subfolders || [];
+  }
+
+  return crumbs;
+}
+
 function PresentationContent({ data }: { data: PresentationData }) {
   const folders = data.folders || [];
   const [activeFolder, setActiveFolder] = useState<string | null>(folders.length > 0 ? slugify(folders[0].name) : null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   const findFolder = (folders: PresentationFolder[], targetPath: string, parentPath: string = ""): PresentationFolder | null => {
     for (const f of folders) {
@@ -254,6 +312,7 @@ function PresentationContent({ data }: { data: PresentationData }) {
   };
 
   const currentFolder = activeFolder ? findFolder(folders, activeFolder) : null;
+  const breadcrumbs = activeFolder ? buildBreadcrumb(folders, activeFolder) : [];
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
@@ -302,7 +361,61 @@ function PresentationContent({ data }: { data: PresentationData }) {
             <Menu className="w-5 h-5" />
           </button>
           <img src={audiLogo} alt="Audi" className="h-5 md:hidden" />
+
+          {breadcrumbs.length > 0 && (
+            <nav className="hidden md:flex items-center gap-1.5 text-sm" data-testid="breadcrumb-nav">
+              <button
+                onClick={() => setActiveFolder(breadcrumbs[0].path)}
+                className="text-muted-foreground hover:text-white transition-colors"
+                data-testid="breadcrumb-home"
+              >
+                <Home className="w-4 h-4" />
+              </button>
+              {breadcrumbs.map((crumb, idx) => (
+                <React.Fragment key={crumb.path}>
+                  <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40" />
+                  <button
+                    onClick={() => setActiveFolder(crumb.path)}
+                    className={cn(
+                      "font-extended text-xs tracking-wider transition-colors",
+                      idx === breadcrumbs.length - 1
+                        ? "text-white font-bold"
+                        : "text-muted-foreground hover:text-white"
+                    )}
+                    data-testid={`breadcrumb-${crumb.path}`}
+                  >
+                    {crumb.name}
+                  </button>
+                </React.Fragment>
+              ))}
+            </nav>
+          )}
+
           <div className="flex-1"></div>
+
+          <div className="flex items-center gap-2 border border-white/10 rounded-lg bg-black/20 p-0.5" data-testid="view-mode-toggle">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={cn(
+                "p-1.5 rounded-md transition-all",
+                viewMode === "grid" ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-white"
+              )}
+              data-testid="button-view-grid"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={cn(
+                "p-1.5 rounded-md transition-all",
+                viewMode === "list" ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-white"
+              )}
+              data-testid="button-view-list"
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
+
           <div className="flex items-center gap-2 text-muted-foreground/60 border border-white/10 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full bg-black/20">
             <ShieldAlert className="w-3 h-3 text-destructive" />
             <span className="text-[9px] md:text-[10px] font-extended uppercase tracking-widest font-bold">Confidentiel</span>
@@ -313,15 +426,33 @@ function PresentationContent({ data }: { data: PresentationData }) {
           <div className="p-4 md:p-10 flex-1">
             {currentFolder ? (
               <div className="flex flex-col gap-6">
+                {breadcrumbs.length > 1 && (
+                  <nav className="md:hidden flex items-center gap-1.5 flex-wrap" data-testid="breadcrumb-nav-mobile">
+                    {breadcrumbs.map((crumb, idx) => (
+                      <React.Fragment key={crumb.path}>
+                        {idx > 0 && <ChevronRight className="w-3 h-3 text-muted-foreground/40" />}
+                        <button
+                          onClick={() => setActiveFolder(crumb.path)}
+                          className={cn(
+                            "font-extended text-[10px] tracking-wider transition-colors",
+                            idx === breadcrumbs.length - 1
+                              ? "text-white font-bold"
+                              : "text-muted-foreground hover:text-white"
+                          )}
+                        >
+                          {crumb.name}
+                        </button>
+                      </React.Fragment>
+                    ))}
+                  </nav>
+                )}
+
                 <motion.div
                   key={activeFolder}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
                 >
-                  <div className="inline-block px-3 py-1 mb-4 rounded-full border border-primary/30 bg-primary/10 text-primary font-extended text-xs font-bold tracking-widest uppercase">
-                    Dossier
-                  </div>
                   <h2 className="text-2xl md:text-4xl lg:text-5xl font-extended font-bold tracking-tight text-white mb-4" data-testid="text-presentation-folder-title">
                     {currentFolder.name}
                   </h2>
@@ -336,9 +467,13 @@ function PresentationContent({ data }: { data: PresentationData }) {
                     <h3 className="font-extended font-bold text-sm tracking-widest text-muted-foreground uppercase border-b border-border/50 pb-2 mb-4">
                       Vidéos
                     </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+                    <div className={cn(
+                      viewMode === "grid"
+                        ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6"
+                        : "flex flex-col gap-3"
+                    )}>
                       {currentFolder.videos.map((video, idx) => (
-                        <VideoCardWithDialog key={idx} video={video} />
+                        <VideoCardWithDialog key={idx} video={video} viewMode={viewMode} />
                       ))}
                     </div>
                   </motion.div>
