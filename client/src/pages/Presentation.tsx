@@ -178,22 +178,32 @@ function slugify(name: string): string {
     .replace(/^-|-$/g, '');
 }
 
-function SidebarNavItem({ folder, level = 0, activeFolder, onSelect, onNavigate }: {
+function SidebarNavItem({ folder, level = 0, activeFolder, onSelect, onNavigate, parentPath = "" }: {
   folder: PresentationFolder;
   level?: number;
   activeFolder: string | null;
-  onSelect: (name: string) => void;
+  onSelect: (path: string) => void;
   onNavigate?: () => void;
+  parentPath?: string;
 }) {
-  const slug = slugify(folder.name);
-  const isActive = activeFolder === slug;
+  const folderPath = parentPath ? `${parentPath}/${slugify(folder.name)}` : slugify(folder.name);
+  const isActive = activeFolder === folderPath;
   const hasChildren = folder.subfolders && folder.subfolders.length > 0;
-  const isExpanded = isActive || (hasChildren && folder.subfolders!.some(sub => slugify(sub.name) === activeFolder));
+
+  const hasActiveChild = (f: PresentationFolder, basePath: string): boolean => {
+    if (!f.subfolders) return false;
+    return f.subfolders.some(sub => {
+      const subPath = `${basePath}/${slugify(sub.name)}`;
+      return activeFolder === subPath || hasActiveChild(sub, subPath);
+    });
+  };
+
+  const isExpanded = isActive || hasActiveChild(folder, folderPath);
 
   return (
     <div className="w-full flex flex-col">
       <button
-        onClick={() => { onSelect(slug); onNavigate?.(); }}
+        onClick={() => { onSelect(folderPath); onNavigate?.(); }}
         className={cn(
           "flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 border-l-2 relative w-full text-left",
           isActive
@@ -201,7 +211,7 @@ function SidebarNavItem({ folder, level = 0, activeFolder, onSelect, onNavigate 
             : "border-transparent text-muted-foreground hover:bg-white/5 hover:text-white"
         )}
         style={{ paddingLeft: `${level * 12 + 16}px` }}
-        data-testid={`button-nav-${slug}`}
+        data-testid={`button-nav-${folderPath}`}
       >
         {isActive ? (
           <FolderIcon className="w-5 h-5 text-primary fill-primary/20" />
@@ -218,7 +228,7 @@ function SidebarNavItem({ folder, level = 0, activeFolder, onSelect, onNavigate 
       {hasChildren && isExpanded && (
         <div className="flex flex-col">
           {folder.subfolders!.map((sub, idx) => (
-            <SidebarNavItem key={idx} folder={sub} level={level + 1} activeFolder={activeFolder} onSelect={onSelect} onNavigate={onNavigate} />
+            <SidebarNavItem key={idx} folder={sub} level={level + 1} activeFolder={activeFolder} onSelect={onSelect} onNavigate={onNavigate} parentPath={folderPath} />
           ))}
         </div>
       )}
@@ -231,11 +241,12 @@ function PresentationContent({ data }: { data: PresentationData }) {
   const [activeFolder, setActiveFolder] = useState<string | null>(folders.length > 0 ? slugify(folders[0].name) : null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const findFolder = (folders: PresentationFolder[], slug: string): PresentationFolder | null => {
+  const findFolder = (folders: PresentationFolder[], targetPath: string, parentPath: string = ""): PresentationFolder | null => {
     for (const f of folders) {
-      if (slugify(f.name) === slug) return f;
+      const currentPath = parentPath ? `${parentPath}/${slugify(f.name)}` : slugify(f.name);
+      if (currentPath === targetPath) return f;
       if (f.subfolders) {
-        const found = findFolder(f.subfolders, slug);
+        const found = findFolder(f.subfolders, targetPath, currentPath);
         if (found) return found;
       }
     }
@@ -346,7 +357,7 @@ function PresentationContent({ data }: { data: PresentationData }) {
                       {currentFolder.subfolders.map((sub, idx) => (
                         <button
                           key={idx}
-                          onClick={() => setActiveFolder(slugify(sub.name))}
+                          onClick={() => setActiveFolder(`${activeFolder}/${slugify(sub.name)}`)}
                           className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 p-4 md:p-6 hover:bg-white/10 hover:border-primary/50 transition-all duration-300 flex items-center gap-4 cursor-pointer text-left"
                           data-testid={`button-subfolder-${slugify(sub.name)}`}
                         >
