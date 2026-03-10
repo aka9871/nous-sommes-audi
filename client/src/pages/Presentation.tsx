@@ -113,7 +113,15 @@ function PresentationAuth({ onAuth }: { onAuth: () => void }) {
   );
 }
 
+function getVimeoId(url: string): string | null {
+  const match = url.match(/vimeo\.com\/video\/(\d+)/);
+  return match ? match[1] : null;
+}
+
 function VideoCard({ video, onClick }: { video: PresentationVideo; onClick: () => void }) {
+  const videoId = getVimeoId(video.url);
+  const thumbnailUrl = videoId ? `https://vumbnail.com/${videoId}.jpg` : null;
+
   return (
     <div
       className="group cursor-pointer rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-all duration-500 overflow-hidden flex flex-col shadow-lg hover:shadow-primary/5"
@@ -121,23 +129,18 @@ function VideoCard({ video, onClick }: { video: PresentationVideo; onClick: () =
       data-testid={`card-video-${video.title}`}
     >
       <div className="relative aspect-video w-full bg-black flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-black to-zinc-900"></div>
-        <img src={audiLogo} alt="" className="absolute w-24 opacity-10" />
+        {thumbnailUrl ? (
+          <img src={thumbnailUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
+        ) : (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-black to-zinc-900"></div>
+            <img src={audiLogo} alt="" className="absolute w-24 opacity-10" />
+          </>
+        )}
+        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-all duration-300"></div>
         <div className="relative z-10 w-16 h-16 rounded-full bg-primary/20 border-2 border-primary/50 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 group-hover:bg-primary/30 transition-all duration-300">
           <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[16px] border-l-white border-b-[10px] border-b-transparent ml-1"></div>
         </div>
-        <div className="absolute top-3 left-3 z-20 flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10">
-          <Play className="w-3 h-3 text-primary" />
-          <span className="text-[10px] font-extended uppercase font-bold tracking-wider text-white">VIMEO</span>
-        </div>
-      </div>
-      <div className="p-4">
-        <h4 className="font-extended font-bold text-white text-xs md:text-sm leading-tight group-hover:text-primary transition-colors">
-          {video.title}
-        </h4>
-        {video.description && (
-          <p className="text-xs text-muted-foreground mt-2">{video.description}</p>
-        )}
       </div>
     </div>
   );
@@ -151,9 +154,6 @@ function VideoCardWithDialog({ video }: { video: PresentationVideo }) {
       <VideoCard video={video} onClick={() => setOpen(true)} />
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-5xl w-[95vw] bg-black/95 border-white/10 p-0 overflow-hidden">
-          <div className="p-4 border-b border-white/10">
-            <h3 className="font-extended font-bold text-white text-sm md:text-base">{video.title}</h3>
-          </div>
           <div className="relative w-full aspect-video">
             <iframe
               src={`${video.url}${video.url.includes('?') ? '&' : '?'}autoplay=1&title=0&byline=0&portrait=0`}
